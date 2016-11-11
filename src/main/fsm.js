@@ -397,3 +397,11 @@ function saveAsLaTeX() {
 	var texData = exporter.toLaTeX();
 	output(texData);
 }
+
+function clearCanvas(){
+	nodes = [];
+	links = [];
+	localStorage.removeItem('fsm');			
+	var context = canvas.getContext('2d')
+	context.clearRect(0, 0, canvas.width, canvas.height);
+}
