@@ -1,3 +1,3 @@
 # Finite State Machine Designer
 
-http://madebyevan.com/fsm/
+Upgraded fork from original http://madebyevan.com/fsm/ , adding new functionalities and options.
