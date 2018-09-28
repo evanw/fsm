@@ -97,7 +97,7 @@ function ExportAsLaTeX() {
 			}
 			x *= this._scale;
 			y *= this._scale;
-			this._texData += '\\draw (' + fixed(x, 2) + ',' + fixed(-y, 2) + ') node ' + nodeParams + '{$' + originalText.replace(/ /g, '\\mbox{ }') + '$};\n';
+			this._texData += '\\draw (' + fixed(x, 2) + ',' + fixed(-y, 2) + ') node ' + nodeParams + '{$' + originalText.replace(/ /g, '\\mbox{ }').replace('$', '\\$') + '$};\n';
 		}
 	};
 
