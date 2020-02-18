@@ -5,19 +5,12 @@ function ExportAsLaTeX() {
 	this._scale = 0.1; // to convert pixels to document space (TikZ breaks if the numbers get too big, above 500?)
 
 	this.toLaTeX = function() {
-		return '\\documentclass[12pt]{article}\n' +
-			'\\usepackage{tikz}\n' +
-			'\n' +
-			'\\begin{document}\n' +
-			'\n' +
-			'\\begin{center}\n' +
+		return '\\begin{center}\n' +
 			'\\begin{tikzpicture}[scale=0.2]\n' +
 			'\\tikzstyle{every node}+=[inner sep=0pt]\n' +
 			this._texData +
 			'\\end{tikzpicture}\n' +
-			'\\end{center}\n' +
-			'\n' +
-			'\\end{document}\n';
+			'\\end{center}\n'
 	};
 
 	this.beginPath = function() {
