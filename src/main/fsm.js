@@ -336,7 +336,8 @@ document.onkeypress = function(e) {
 		return true;
 	} else if(key >= 0x20 && key <= 0x7E && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObject != null && 'text' in selectedObject) {
 		console.log('Before key press, cursor value is ' + selectedObject.cursor); 
-		selectedObject.text += String.fromCharCode(key);
+		// selectedObject.text += String.fromCharCode(key);
+		selectedObject.text = selectedObject.text.substr(0, selectedObject.cursor) + String.fromCharCode(key) + selectedObject.text.slice(selectedObject.cursor); 
 		selectedObject.cursor++; 
 		console.log('After key press, cursor value is ' + selectedObject.cursor); 
 		resetCaret();
