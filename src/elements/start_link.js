@@ -3,6 +3,7 @@ function StartLink(node, start) {
 	this.deltaX = 0;
 	this.deltaY = 0;
 	this.text = '';
+	this.cursor = 0; 
 
 	if(start) {
 		this.setAnchorPoint(start.x, start.y);
@@ -45,7 +46,7 @@ StartLink.prototype.draw = function(c) {
 
 	// draw the text at the end without the arrow
 	var textAngle = Math.atan2(stuff.startY - stuff.endY, stuff.startX - stuff.endX);
-	drawText(c, this.text, stuff.startX, stuff.startY, textAngle, selectedObject == this);
+	drawText(c, this.text, this.cursor, stuff.startX, stuff.startY, textAngle, selectedObject == this);
 
 	// draw the head of the arrow
 	drawArrow(c, stuff.endX, stuff.endY, Math.atan2(-this.deltaY, -this.deltaX));

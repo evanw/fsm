@@ -44,11 +44,11 @@ function canvasHasFocus() {
 	return (document.activeElement || document.body) == document.body;
 }
 
-function drawText(c, originalText, x, y, angleOrNull, isSelected) {
+function drawText(c, originalText, cursor, x, y, angleOrNull, isSelected) {
 	text = convertLatexShortcuts(originalText);
 	c.font = '20px "Times New Roman", serif';
 	var width = c.measureText(text).width;
-
+	var cursorPos = c.measureText(text.substr(0, cursor)).width; 
 	// center the text
 	x -= width / 2;
 
@@ -71,7 +71,7 @@ function drawText(c, originalText, x, y, angleOrNull, isSelected) {
 		y = Math.round(y);
 		c.fillText(text, x, y + 6);
 		if(isSelected && caretVisible && canvasHasFocus() && document.hasFocus()) {
-			x += width;
+			x += cursorPos;
 			c.beginPath();
 			c.moveTo(x, y - 10);
 			c.lineTo(x, y + 10);
@@ -275,14 +275,34 @@ document.onkeydown = function(e) {
 		return true;
 	} else if(key == 8) { // backspace key
 		if(selectedObject != null && 'text' in selectedObject) {
-			selectedObject.text = selectedObject.text.substr(0, selectedObject.text.length - 1);
+			// selectedObject.text = selectedObject.text.substr(0, selectedObject.text.length - 1);
+			// console.log('Before delete, cursor value is ' + selectedObject.cursor + ' text length is ' + selectedObject.text.length); 
+			selectedObject.text = selectedObject.text.substr(0, selectedObject.cursor-1) + selectedObject.text.slice(selectedObject.cursor);
+			selectedObject.cursor = Math.max(0, selectedObject.cursor-1); 
+			// console.log('After delete, cursor value is ' + selectedObject.cursor); 
 			resetCaret();
 			draw();
 		}
-
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
-	} else if(key == 46) { // delete key
+	} else if (key==37) { // left shift key  
+		if(selectedObject != null && 'text' in selectedObject) {
+			// console.log('Before left shift, cursor value is ' + selectedObject.cursor); 
+			selectedObject.cursor = Math.max(0, selectedObject.cursor - 1); 
+			// console.log('After left shift, cursor value is ' + selectedObject.cursor); 
+			resetCaret();
+			draw();
+		}
+		return false;
+	} else if (key==39) { // right shift key 
+		if(selectedObject != null && 'text' in selectedObject ) {
+			selectedObject.cursor = Math.min(selectedObject.cursor + 1, selectedObject.text.length); 
+			resetCaret();
+			draw();
+		}
+		return false;
+	}
+	else if(key == 46) { // delete key
 		if(selectedObject != null) {
 			for(var i = 0; i < nodes.length; i++) {
 				if(nodes[i] == selectedObject) {
@@ -315,7 +335,11 @@ document.onkeypress = function(e) {
 		// don't read keystrokes when other things have focus
 		return true;
 	} else if(key >= 0x20 && key <= 0x7E && !e.metaKey && !e.altKey && !e.ctrlKey && selectedObject != null && 'text' in selectedObject) {
-		selectedObject.text += String.fromCharCode(key);
+		console.log('Before key press, cursor value is ' + selectedObject.cursor); 
+		// selectedObject.text += String.fromCharCode(key);
+		selectedObject.text = selectedObject.text.substr(0, selectedObject.cursor) + String.fromCharCode(key) + selectedObject.text.slice(selectedObject.cursor); 
+		selectedObject.cursor++; 
+		console.log('After key press, cursor value is ' + selectedObject.cursor); 
 		resetCaret();
 		draw();
 
