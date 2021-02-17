@@ -282,7 +282,7 @@ document.onkeydown = function(e) {
 
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
-	} else if(key == 46) { // delete key
+	} else if(key == 46 || key == 13) { // delete key or return key
 		if(selectedObject != null) {
 			for(var i = 0; i < nodes.length; i++) {
 				if(nodes[i] == selectedObject) {
