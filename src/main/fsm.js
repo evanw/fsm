@@ -397,3 +397,60 @@ function saveAsLaTeX() {
 	var texData = exporter.toLaTeX();
 	output(texData);
 }
+
+function writeToFile() {
+    var filename = "";
+    //don't accept empty file-name
+    while (filename === "") {
+        filename = prompt("Please provide a filename\nfor saving your graph:", "");
+    }
+
+    //unless user cancels, use cross-browser "download file" api
+    if (filename != null) {
+        filename += ".fsm"
+
+        //generate a link to a URI-encoded JSON-formated copy of current FSM
+        var generatedLink = document.createElement('a');
+        generatedLink.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(localStorage['fsm']));
+        generatedLink.setAttribute('download', filename);
+        //cross-browser activation of generated link
+        if (document.createEvent) {
+            var event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            generatedLink.dispatchEvent(event);
+        } else {
+            generatedLink.click();
+        }
+    }
+}
+
+function clearFSM() {
+    //reset internal fsm object and internal state, clear canvas
+    localStorage['fsm'] = '{"nodes":[],"links":[]}';
+    nodes = [];
+    links = [];
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function loadFile() {
+    var file;
+    var reader = new FileReader();
+    var input = document.createElement('input');
+
+    input.type = 'file';
+    input.accept=".fsm";
+    //create event to read file as UTF-8 encoded into virtual local storage
+    input.onchange = e => {
+        var file = e.target.files[0];
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = readerEvent => {
+            nodes = []
+            links = []
+            localStorage['fsm'] = readerEvent.target.result;
+            restoreBackup();
+            drawUsing(canvas.getContext('2d'));
+        }
+    }
+    //activate event
+    input.click();
+}
