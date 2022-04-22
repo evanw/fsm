@@ -1,4 +1,16 @@
 /*
+Initially forked from:
+    Finite State Machine Designer - Copyright (c) 2010 Evan Wallace
+        Released under the MIT license:  /fsm_license
+        code:
+        https://github.com/evanw/fsm
+
+    All modifications and extensions to the fsm code are Copyright 2022
+    by Andrew Walsh, and are available under the Peer Production License:
+    https://wiki.p2pfoundation.net/Peer_Production_License
+
+
+
  Finite State Machine Designer (http://madebyevan.com/fsm/)
  License: MIT License (see below)
 
