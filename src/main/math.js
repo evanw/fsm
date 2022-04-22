@@ -1,6 +1,6 @@
 function det(a, b, c, d, e, f, g, h, i) {
 	return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g;
-}
+}//end of det()
 
 function circleFromThreePoints(x1, y1, x2, y2, x3, y3) {
 	var a = det(x1, y1, 1, x2, y2, 1, x3, y3, 1);
@@ -12,8 +12,8 @@ function circleFromThreePoints(x1, y1, x2, y2, x3, y3) {
 		'y': -by / (2*a),
 		'radius': Math.sqrt(bx*bx + by*by - 4*a*c) / (2*Math.abs(a))
 	};
-}
+}//end of circleFromThreePoints()
 
 function fixed(number, digits) {
 	return number.toFixed(digits).replace(/0+$/, '').replace(/\.$/, '');
-}
+}//end of fixed()
