@@ -1,3 +1,3 @@
-# Finite State Machine Designer
+# General Graph Designer
 
-http://madebyevan.com/fsm/
+https://www.magnacogita.com/graph
