@@ -11,11 +11,11 @@ function ExportAsSVG() {
 
 	this.toSVG = function() {
 		return '<?xml version="1.0" standalone="no"?>\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n\n<svg width="800" height="600" version="1.1" xmlns="http://www.w3.org/2000/svg">\n' + this._svgData + '</svg>\n';
-	};
+	};//end of this.toSVG() method
 
 	this.beginPath = function() {
 		this._points = [];
-	};
+	};//end of this.beginPath() method
 	this.arc = function(x, y, radius, startAngle, endAngle, isReversed) {
 		x += this._transX;
 		y += this._transY;
@@ -50,12 +50,12 @@ function ExportAsSVG() {
 			this._svgData += fixed(endX, 3) + ',' + fixed(endY, 3); // endPoint(endX, endY)
 			this._svgData += '"/>\n';
 		}
-	};
+	};//end of this.arc() method
 	this.moveTo = this.lineTo = function(x, y) {
 		x += this._transX;
 		y += this._transY;
 		this._points.push({ 'x': x, 'y': y });
-	};
+	};//end of this.moveTo() method
 	this.stroke = function() {
 		if(this._points.length == 0) return;
 		this._svgData += '\t<polygon stroke="' + this.strokeStyle + '" stroke-width="' + this.lineWidth + '" points="';
@@ -63,7 +63,7 @@ function ExportAsSVG() {
 			this._svgData += (i > 0 ? ' ' : '') + fixed(this._points[i].x, 3) + ',' + fixed(this._points[i].y, 3);
 		}
 		this._svgData += '"/>\n';
-	};
+	};//end of this.stroke() method
 	this.fill = function() {
 		if(this._points.length == 0) return;
 		this._svgData += '\t<polygon fill="' + this.fillStyle + '" stroke-width="' + this.lineWidth + '" points="';
@@ -71,23 +71,23 @@ function ExportAsSVG() {
 			this._svgData += (i > 0 ? ' ' : '') + fixed(this._points[i].x, 3) + ',' + fixed(this._points[i].y, 3);
 		}
 		this._svgData += '"/>\n';
-	};
+	};//end of this.fill() method
 	this.measureText = function(text) {
 		var c = canvas.getContext('2d');
 		c.font = '20px "Times New Romain", serif';
 		return c.measureText(text);
-	};
+	};//end of this.measureText() method
 	this.fillText = function(text, x, y) {
 		x += this._transX;
 		y += this._transY;
 		if(text.replace(' ', '').length > 0) {
 			this._svgData += '\t<text x="' + fixed(x, 3) + '" y="' + fixed(y, 3) + '" font-family="Times New Roman" font-size="20">' + textToXML(text) + '</text>\n';
 		}
-	};
+	};//end of this.fillText() method
 	this.translate = function(x, y) {
 		this._transX = x;
 		this._transY = y;
-	};
+	};//end of this.translate() method
 
 	this.save = this.restore = this.clearRect = function(){};
-}
+}//end of ExportAsSVG()

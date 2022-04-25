@@ -1,121 +1,159 @@
 <!doctype html>
-<html><head>
-	<title>Finite State Machine Designer - by Evan Wallace</title>
-  <meta charset="utf-8">
-	<style>
+<html style="height:100%;">
+    <!-- General Graph Designer - Copyright (c) 2022 Andrew Walsh
+            Initial code forked from Finite State Machine Designer
+            https://github.com/evanw/fsm
+            Copyright (c) 2010 Evan Wallace Released under the MIT license,
+            All modifications and extensions to the fsm code are
+            Copyright (c) 2022, Andrew Walsh, Released under the Peer Production
+            License:
+                https://wiki.p2pfoundation.net/Peer_Production_License
+    -->
+    <head>
+        <title>Graph Designer - by Andrew Walsh</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            * {
+                box-sizing: border-box;
+            }/*end of global-style section*/
+            input[type='number']{
+                width: 3em;//how wide number-input boxes will be
+            }
+            /*Firefox:*/
+            input[type=number] {
+                -moz-appearance: textfield;//remove stepper buttons from range input boxes
+            }
+            /*Everyone Else:*/
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;//remove stepper buttons from range input boxes
+                margin: 0;
+            }
 
-body {
-	text-align: center;
-	background: #DFDFDF;
-	margin: 0 30px 100px 30px;
-	font: 14px/18px 'Lucida Grande', 'Segoe UI', sans-serif;
-}
+            section{/* Container for flexboxes */
+                display: -webkit-flex;
+                display: flex;
+            }/*end of section-style section*/
+            canvas {/*Style canvas element*/
+                display: block;
+                max-width: 800px;
+                background: white;
+                border-radius: 20px;
+                -moz-border-radius: 20px;
+            }/*end of canvas-style section*/
+            .error {
+                display: block;
+                color: red;
+                font-size: 28px;
+                line-height: 30px;
+                padding: 30px;
+            }/*end of .error-style section*/
+            textarea {
+                display: none;
+                height: 400px;
+                margin: 0 auto;
+            }/*end of textarea-style section*/
+            article {
+                -webkit-flex: 3;
+                -ms-flex: 3;
+                flex: 3;
+                padding: 0px;
+            }/*end of article-style section*/
+            aside {/* Style the main display area */
+                -webkit-flex: 1;
+                -ms-flex: 1;
+                flex: 1;
+                padding: 0px;
+            }/*end of aside-style section*/
+            /* Responsive layout:*/
+            @media (max-width:840px) {
+                section {
+                    -webkit-flex-direction: column;
+                    flex-direction: column;
+                }/*end of section-style @media-sub-section*/
+            }/*end of @media-style section*/
+        </style>
 
-h1 {
-	font: bold italic 50px Georgia, serif;
-}
+        <script>
+            /* base64.js - Base64 encoding and decoding functions
+            * Copyright (c) 2007, David Lindquist <david.lindquist@gmail.com>
+            * Released under the MIT license
+            * See: http://developer.mozilla.org/en/docs/DOM:window.btoa
+            *      http://developer.mozilla.org/en/docs/DOM:window.atob
+            */
+            if (typeof btoa == 'undefined') {
+                function btoa(str) {
+                    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+                    var encoded = [];
+                    var c = 0;
+                    while (c < str.length) {
+                        var b0 = str.charCodeAt(c++);
+                        var b1 = str.charCodeAt(c++);
+                        var b2 = str.charCodeAt(c++);
+                        var buf = (b0 << 16) + ((b1 || 0) << 8) + (b2 || 0);
+                        var i0 = (buf & (63 << 18)) >> 18;
+                        var i1 = (buf & (63 << 12)) >> 12;
+                        var i2 = isNaN(b1) ? 64 : (buf & (63 << 6)) >> 6;
+                        var i3 = isNaN(b2) ? 64 : (buf & 63);
+                        encoded[encoded.length] = chars.charAt(i0);
+                        encoded[encoded.length] = chars.charAt(i1);
+                        encoded[encoded.length] = chars.charAt(i2);
+                        encoded[encoded.length] = chars.charAt(i3);
+                    }
+                    return encoded.join('');
+                }
+            }
+        </script>
+    </head>
 
-canvas {
-	display: block;
-	max-width: 800px;
-	background: white;
-	border-radius: 20px;
-	-moz-border-radius: 20px;
-	margin: 10px auto;
-}
+    <body bgcolor="#DFDFDF">
+                <header>
+                    <span style="font-family: Georgia, serif; font-size:20px; font-style: bold, italic;">
+                        General Graph Designer
+                    </span>
+                    &nbsp&nbsp&nbsp - &nbsp&nbsp&nbsp
+                    <span style="">
+                        <a href="./howto.html">How To Use</a>&nbsp|&nbsp
+                        <a href="javascript:writeToFile()">Save to File</a>&nbsp|&nbsp
+                        <a href="javascript:loadFile()">Load Graph</a>&nbsp|&nbsp
+                        <a href="javascript:clearGraph()">Clear Graph</a>
+                    </span>
+                </header>
+                <section>
+                    <article>
+                        <span>
+                        <canvas id="graph" style="float: center" width="800" height="600">
+                        <!--canvas id="canvas" width="800" height="600"-->
+                            <span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
+                        </canvas>
+                    </span>
+                    </article>
+                    <aside>
+                        <span style="">
+                            Export as:&nbsp
+                            <a href="javascript:saveAsPNG()">PNG</a>&nbsp|&nbsp
+                            <a href="javascript:saveAsSVG()">SVG</a>&nbsp|&nbsp
+                            <a href="javascript:saveAsLaTeX()">LaTeX</a>
+                        </span>
+                        <br>
+                        <span style="font-size:16px;">
+                            <b>Radius Adjustment:</b> <input type="number" value="0" id="radinum" name="radinum" onchange="radAdjBoxUpdate()" min=minRadius max=maxRadius style="width: 3em" required="true">
+                        </span>
+                        <canvas id="radiusDisp" style="float: left" width="200" height="200">
+                        <!--canvas id="radiusDisp" width="200" height="200"-->
+                            <span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
+                        </canvas><br>
+                        <!--input type="range" id="radiadjst" name="radiadjst" min=minRadius max=maxRadius-->
+                        <input type="range" id="radiadjst" name="radiadjst">
+                    </aside>
+                </section>
+                <footer>
+                    The big white box above is the interface to the General Graph Designer.<br>
+                    <textarea id="output"></textarea><br>
+                </footer>
 
-a {
-	color: black;
-}
 
-div {
-	margin: 30px auto;
-	text-align: left;
-	max-width: 800px;
-}
-
-.error {
-	display: block;
-	color: red;
-	font-size: 28px;
-	line-height: 30px;
-	padding: 30px;
-}
-
-p {
-	margin: 30px 0;
-	line-height: 20px;
-}
-
-.center {
-	text-align: center;
-}
-
-textarea {
-	display: none;
-	width: 75%;
-	height: 400px;
-	margin: 0 auto;
-}
-
-  </style>
-	<script src="fsm.js"></script>
-	<script>
-
-/*
- * base64.js - Base64 encoding and decoding functions
- *
- * See: http://developer.mozilla.org/en/docs/DOM:window.btoa
- *      http://developer.mozilla.org/en/docs/DOM:window.atob
- *
- * Copyright (c) 2007, David Lindquist <david.lindquist@gmail.com>
- * Released under the MIT license
- */
-
-if (typeof btoa == 'undefined') {
-    function btoa(str) {
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-        var encoded = [];
-        var c = 0;
-        while (c < str.length) {
-            var b0 = str.charCodeAt(c++);
-            var b1 = str.charCodeAt(c++);
-            var b2 = str.charCodeAt(c++);
-            var buf = (b0 << 16) + ((b1 || 0) << 8) + (b2 || 0);
-            var i0 = (buf & (63 << 18)) >> 18;
-            var i1 = (buf & (63 << 12)) >> 12;
-            var i2 = isNaN(b1) ? 64 : (buf & (63 << 6)) >> 6;
-            var i3 = isNaN(b2) ? 64 : (buf & 63);
-            encoded[encoded.length] = chars.charAt(i0);
-            encoded[encoded.length] = chars.charAt(i1);
-            encoded[encoded.length] = chars.charAt(i2);
-            encoded[encoded.length] = chars.charAt(i3);
-        }
-        return encoded.join('');
-    }
-}
-
-	</script>
-</head><body>
-	<h1>Finite State Machine Designer</h1>
-	<canvas id="canvas" width="800" height="600">
-		<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
-	</canvas>
-	<div>
-		<p class="center">Export as: <a href="javascript:saveAsPNG()">PNG</a> | <a href="javascript:saveAsSVG()">SVG</a> | <a href="javascript:saveAsLaTeX()">LaTeX</a></p>
-		<textarea id="output"></textarea>
-		<p>The big white box above is the FSM designer.&nbsp; Here's how to use it:</p>
-		<ul>
-			<li><b>Add a state:</b> double-click on the canvas</li>
-			<li><b>Add an arrow:</b> shift-drag on the canvas</li>
-			<li><b>Move something:</b> drag it around</li>
-			<li><b>Delete something:</b> click it and press the delete key (not the backspace key)</li>
-		</ul><ul>
-			<li><b>Make accept state:</b> double-click on an existing state</li>
-			<li><b>Type numeric subscript:</b> put an underscore before the number (like "S_0")</li>
-			<li><b>Type greek letter:</b> put a backslash before it (like "\beta")</li>
-		</ul>
-		<p>This was made in HTML5 and JavaScript using the canvas element.</p>
-	</div>
-	<p>Created by <a href="http://madebyevan.com/">Evan Wallace</a> in 2010</p>
-</body></html>
+                <script src="graph.js"></script><!-- moved here from inside <head>-->
+    </body>
+</html>

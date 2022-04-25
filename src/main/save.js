@@ -1,98 +1,116 @@
 function restoreBackup() {
-	if(!localStorage || !JSON) {
-		return;
-	}
+    if(!localStorage || !JSON) {
+        return;
+    }
 
-	try {
-		var backup = JSON.parse(localStorage['fsm']);
+    try {
+        var backup = JSON.parse(localStorage['graph']);//custom format generator here
 
-		for(var i = 0; i < backup.nodes.length; i++) {
-			var backupNode = backup.nodes[i];
-			var node = new Node(backupNode.x, backupNode.y);
-			node.isAcceptState = backupNode.isAcceptState;
-			node.text = backupNode.text;
-			nodes.push(node);
-		}
-		for(var i = 0; i < backup.links.length; i++) {
-			var backupLink = backup.links[i];
-			var link = null;
-			if(backupLink.type == 'SelfLink') {
-				link = new SelfLink(nodes[backupLink.node]);
-				link.anchorAngle = backupLink.anchorAngle;
-				link.text = backupLink.text;
-			} else if(backupLink.type == 'StartLink') {
-				link = new StartLink(nodes[backupLink.node]);
-				link.deltaX = backupLink.deltaX;
-				link.deltaY = backupLink.deltaY;
-				link.text = backupLink.text;
-			} else if(backupLink.type == 'Link') {
-				link = new Link(nodes[backupLink.nodeA], nodes[backupLink.nodeB]);
-				link.parallelPart = backupLink.parallelPart;
-				link.perpendicularPart = backupLink.perpendicularPart;
-				link.text = backupLink.text;
-				link.lineAngleAdjust = backupLink.lineAngleAdjust;
-			}
-			if(link != null) {
-				links.push(link);
-			}
-		}
-	} catch(e) {
-		localStorage['fsm'] = '';
-	}
-}
+        lastRadius = radiusClamp(backup.lastRadius);//we try to keep track of what the last vertex radius used was
+        updateRadAdj();//update radius adjustment canvas
+
+
+        localStorage.setItem("hasCodeRunBefore", true);
+
+        for(var i = 0; i < backup.vertices.length; i++) {
+            var backupVertex = backup.vertices[i];
+            var vertex = new Vertex(backupVertex.x, backupVertex.y);
+            vertex.isAcceptState = backupVertex.isAcceptState;
+            vertex.text = backupVertex.text;
+            vertex.radius = Number(backupVertex.radius);
+            vertices.push(vertex);
+        }
+        for(var i = 0; i < backup.edges.length; i++) {
+            var backupedge = backup.edges[i];
+            var edge = null;
+            if(backupedge.type == 'Selfedge') {
+                edge = new Selfedge(vertices[backupedge.vertex]);
+                edge.anchorAngle = backupedge.anchorAngle;
+                edge.text = backupedge.text;
+                edge.direction = backupedge.direction
+            } else if(backupedge.type == 'Startedge') {
+                edge = new Startedge(vertices[backupedge.vertex]);
+                edge.deltaX = backupedge.deltaX;
+                edge.deltaY = backupedge.deltaY;
+                edge.text = backupedge.text;
+                edge.direction = backupedge.direction
+            } else if(backupedge.type == 'Edge') {
+                edge = new Edge(vertices[backupedge.vertexA], vertices[backupedge.vertexB]);
+                edge.parallelPart = backupedge.parallelPart;
+                edge.perpendicularPart = backupedge.perpendicularPart;
+                edge.text = backupedge.text;
+                edge.direction = backupedge.direction
+                edge.lineAngleAdjust = backupedge.lineAngleAdjust;
+            }
+            if(edge != null) {
+                edges.push(edge);
+            }
+        }
+    } catch(e) {
+        localStorage['graph'] = '';
+    }
+}//end of restoreBackup()
 
 function saveBackup() {
-	if(!localStorage || !JSON) {
-		return;
-	}
+    if(!localStorage || !JSON) {
+        return;
+    }
 
-	var backup = {
-		'nodes': [],
-		'links': [],
-	};
-	for(var i = 0; i < nodes.length; i++) {
-		var node = nodes[i];
-		var backupNode = {
-			'x': node.x,
-			'y': node.y,
-			'text': node.text,
-			'isAcceptState': node.isAcceptState,
-		};
-		backup.nodes.push(backupNode);
-	}
-	for(var i = 0; i < links.length; i++) {
-		var link = links[i];
-		var backupLink = null;
-		if(link instanceof SelfLink) {
-			backupLink = {
-				'type': 'SelfLink',
-				'node': nodes.indexOf(link.node),
-				'text': link.text,
-				'anchorAngle': link.anchorAngle,
-			};
-		} else if(link instanceof StartLink) {
-			backupLink = {
-				'type': 'StartLink',
-				'node': nodes.indexOf(link.node),
-				'text': link.text,
-				'deltaX': link.deltaX,
-				'deltaY': link.deltaY,
-			};
-		} else if(link instanceof Link) {
-			backupLink = {
-				'type': 'Link',
-				'nodeA': nodes.indexOf(link.nodeA),
-				'nodeB': nodes.indexOf(link.nodeB),
-				'text': link.text,
-				'lineAngleAdjust': link.lineAngleAdjust,
-				'parallelPart': link.parallelPart,
-				'perpendicularPart': link.perpendicularPart,
-			};
-		}
-		if(backupLink != null) {
-			backup.links.push(backupLink);
-		}
-	}
+    var backup = {
+        'lastRadius': lastRadius,
+        'vertices': [],
+        'edges': [],
+    };
+    //backup.lastRadius = lastRadius
 
-	localStorage['fsm'] = JSON.stringify(backup);
-}
+    for(var i = 0; i < vertices.length; i++) {
+        var vertex = vertices[i];
+        var backupVertex = {
+            'x': vertex.x,
+            'y': vertex.y,
+            'text': vertex.text,
+            'radius': Number(vertex.radius),
+            'isAcceptState': vertex.isAcceptState,
+        };//end of backupVertex object
+        backup.vertices.push(backupVertex);
+    }//end of for vertices loop
+    for(var i = 0; i < edges.length; i++) {
+        var edge = edges[i];
+        var backupedge = null;
+        if(edge instanceof Selfedge) {//loop-back transition
+            backupedge = {
+                'type': 'Selfedge',
+                'vertex': vertices.indexOf(edge.vertex),
+                'text': edge.text,
+                'direction': edge.direction,
+                'anchorAngle': edge.anchorAngle,
+            };
+        } else if(edge instanceof Startedge) {//points to start-state
+            backupedge = {
+                'type': 'Startedge',
+                'vertex': vertices.indexOf(edge.vertex),
+                'text': edge.text,
+                'direction': edge.direction,
+                'deltaX': edge.deltaX,
+                'deltaY': edge.deltaY,
+            };//TODO: next line triggering "Uncaught TypeError: edge is not a function"
+        } else if(edge instanceof Edge) {//points from one state to another
+            backupedge = {
+                'type': 'Edge',
+                'vertexA': vertices.indexOf(edge.vertexA),
+                'vertexB': vertices.indexOf(edge.vertexB),
+                'text': edge.text,
+                'direction': edge.direction,
+                'lineAngleAdjust': edge.lineAngleAdjust,
+                'parallelPart': edge.parallelPart,
+                'perpendicularPart': edge.perpendicularPart,
+            };
+        }//end of edge-type conditional blocks
+        if(backupedge != null) {
+            backup.edges.push(backupedge);
+        }
+    }//end of for edges loop
+
+    //TODO: custom format-loading here
+    localStorage['graph'] = JSON.stringify(backup, null, 4);
+}//end of saveBackup()
