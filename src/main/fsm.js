@@ -373,6 +373,14 @@ function saveAsPNG() {
 	drawUsing(canvas.getContext('2d'));
 	selectedObject = oldSelectedObject;
 	var pngData = canvas.toDataURL('image/png');
+	
+	// Fallback on Chromium based browsers
+    	var downloadLink = document.createElement('a');
+    	downloadLink.download = 'fsm.png';
+    	downloadLink.href = document.getElementById('canvas').toDataURL();
+    	downloadLink.click();
+	
+	// This works on FireFox
 	document.location.href = pngData;
 }
 
