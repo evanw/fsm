@@ -10,6 +10,6 @@ python3 build.py
 
 >**NOTE:** In some operating systems it is sufficient to use ```python``` and not ```python3```.
 
-The file ```fsm.js``` will be created within the ```www/``` directory, that is, where the file ```index.html``` is located.
+The file ```fsm.js``` will be created within the ```www/``` directory.
 
 That's it!
