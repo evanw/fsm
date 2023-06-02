@@ -8,8 +8,8 @@ To publish this project to GitHub Pages we need to use the ```build.py``` file t
 python3 main.py
 ```
 
->**NOTE:** In some operating systems it is sufficient to use ```python`` and not ``python3``.
+>**NOTE:** In some operating systems it is sufficient to use ```python``` and not ```python3```.
 
-The file ``fsm.js`` will be created within the ``www/`` directory, that is, where the file ``index.html`` is located.
+The file ```fsm.js``` will be created within the ```www/``` directory, that is, where the file ```index.html``` is located.
 
 That's it!
