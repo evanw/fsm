@@ -264,17 +264,18 @@ window.onload = function() {
 }
 
 var shift = false;
+var alt = false;
 
 document.onkeydown = function(e) {
 	var key = crossBrowserKey(e);
 
-	if(key == 16) {
+	if (key == 16) {
 		shift = true;
-	} else if(!canvasHasFocus()) {
+	} else if (!canvasHasFocus()) {
 		// don't read keystrokes when other things have focus
 		return true;
-	} else if(key == 8) { // backspace key
-		if(selectedObject != null && 'text' in selectedObject) {
+	} else if (key == 8) { // backspace key
+		if (selectedObject != null && 'text' in selectedObject) {
 			selectedObject.text = selectedObject.text.substr(0, selectedObject.text.length - 1);
 			resetCaret();
 			draw();
@@ -282,29 +283,39 @@ document.onkeydown = function(e) {
 
 		// backspace is a shortcut for the back button, but do NOT want to change pages
 		return false;
-	} else if(key == 46) { // delete key
-		if(selectedObject != null) {
-			for(var i = 0; i < nodes.length; i++) {
-				if(nodes[i] == selectedObject) {
+	} else if (key == 46 || key == 27) { // delete key (keycode 27 is ESC for MACOS users)
+		if (selectedObject != null) {
+			for (var i = 0; i < nodes.length; i++) {
+				if (nodes[i] == selectedObject) {
 					nodes.splice(i--, 1);
 				}
 			}
-			for(var i = 0; i < links.length; i++) {
-				if(links[i] == selectedObject || links[i].node == selectedObject || links[i].nodeA == selectedObject || links[i].nodeB == selectedObject) {
+			for (var i = 0; i < links.length; i++) {
+				if (links[i] == selectedObject || links[i].node == selectedObject || links[i].nodeA == selectedObject || links[i].nodeB == selectedObject) {
 					links.splice(i--, 1);
 				}
 			}
 			selectedObject = null;
 			draw();
 		}
+	} else if (key == 18) { // Alt key
+		alt = true;
+	} else if (alt && key == 87) { // Alt + w
+		nodeRadius += 5; // Increase nodeRadius by 5
+		draw();
+	} else if (alt && key == 83) { // Alt + s
+		nodeRadius -= 5; // Decrease nodeRadius by 5
+		draw();
 	}
 };
 
 document.onkeyup = function(e) {
 	var key = crossBrowserKey(e);
 
-	if(key == 16) {
+	if (key == 16) {
 		shift = false;
+	} else if (key == 18) { // Alt key
+		alt = false;
 	}
 };
 
@@ -368,12 +379,12 @@ function output(text) {
 }
 
 function saveAsPNG() {
-	var oldSelectedObject = selectedObject;
-	selectedObject = null;
-	drawUsing(canvas.getContext('2d'));
-	selectedObject = oldSelectedObject;
-	var pngData = canvas.toDataURL('image/png');
-	document.location.href = pngData;
+    var canvas = document.getElementById("canvas");
+    var image = canvas.toDataURL("image/png");
+    var link = document.createElement("a");
+    link.href = image;
+    link.download = "fsm.png";
+    link.click();
 }
 
 function saveAsSVG() {
