@@ -1,8 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Finite State Machine Designer - by Evan Wallace</title>
+    <title>FSM Ninja</title>
     <meta charset="utf-8">
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="icon.ico" />
+
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -36,7 +40,7 @@
             height: 80px;
 
         }
-
+        
         .options {
             width: 200px;
             display: flex;
@@ -46,23 +50,6 @@
         .jsoneditor {
             border: none;
         }
-
-        .jsoneditor-field {
-            font-size: 22px !important;
-        }
-
-        .jsoneditor-value {
-            font-size: 22px !important;
-        }
-
-        .jsoneditor-string {
-            font-size: 22px !important;
-        }
-
-        .jsoneditor-readonly {
-            font-size: 22px !important;
-        }
-
 
         /*div.jsoneditor{*/
         /*    height: 800px;*/
@@ -158,7 +145,6 @@
 
         #panel {
             margin-left: auto;
-            width: 400px;
         }
 
 
@@ -175,19 +161,19 @@
 
 <nav class="navbar border-bottom border-body px-4 shadow-lg">
     <div class="container-fluid">
-        <a class="navbar-brand text-primary" href="#">DEVELOPED WITH LOVE ❤</a>
+        <a class="navbar-brand" href="#">DEVELOPED WITH LOVE ❤</a>
         <a class="navbar-brand fw-bolder text-secondary" href="#">Finite System Machine Designer</a>
 
         <div>
             <!--            add star me-->
-            <a class="btn btn-outline-primary" href="" target="_blank" role="button">Support Me</a>
+            <a class="btn btn-outline-primary" href="https://github.com/Arash1381-y/fsmNinja.git" target="_blank" role="button">Support Me</a>
         </div>
     </div>
 </nav>
 
 
 <div style="display: flex; padding-left: 8rem; padding-right: 8rem; margin: 1rem">
-    <canvas class="rounded bg-white shadow-lg border-top border-3" id="canvas" width="1200px" height="700px"></canvas>
+    <canvas class="rounded bg-white shadow-lg" id="canvas"></canvas>
     <div class="rounded bg-white shadow-lg" id="panel">
         <div id="jsoneditor"></div>
 
@@ -228,11 +214,7 @@
 
 <br>
 <br>
-<div>
-
-    <p class="center">Export as: <a href="javascript:saveAsPNG()">PNG</a> | <a href="javascript:saveAsSVG()">SVG</a>
-        |
-        <a href="javascript:saveAsLaTeX()">LaTeX</a></p>
+<div style="margin-left: 9rem; margin-right: 9rem;" class="p-2">
 
 
     <p>The big white box above is the FSM designer.&nbsp; Here's how to use it:</p>
@@ -247,7 +229,6 @@
         <li><b>Type numeric subscript:</b> put an underscore before the number (like "S_0")</li>
         <li><b>Type greek letter:</b> put a backslash before it (like "\beta")</li>
     </ul>
-    <p>This was made in HTML5 and JavaScript using the canvas element.</p>
 </div>
 
 

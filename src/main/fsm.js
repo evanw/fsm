@@ -69,8 +69,9 @@ function create_json_editor() {
     }
 
     editor = new JSONEditor(container, options)
+    container.setAttribute("style", `width:${400 * screenRatio}px`)
 
-// set json
+    // set json
     const initialJson = {
         "name": "exampleName",
         "outputs": {
@@ -99,7 +100,7 @@ function get_editor_content() {
 
 /* NEW FUNCTIONS */
 function check_if_mobile_small() {
-    if (window.innerWidth <= 1600) {
+    if (screen.width <= 1200) {
 
         const styleTag = document.createElement('style');
         styleTag.textContent = "\n" +
@@ -175,6 +176,7 @@ function check_if_mobile_small() {
         }
         return false
     }
+    return false
 }
 
 window.addEventListener("resize", check_if_mobile_small);
@@ -287,6 +289,7 @@ let selectedObject = null; // either a Link or a Node
 let currentLink = null; // a Link
 let movingObject = false;
 let originalClick;
+const screenRatio = screen.width / 2000
 
 function draw() {
 
@@ -333,8 +336,11 @@ window.onload = function () {
 
     canvas = document.getElementById('canvas');
     panel = document.getElementById('panel');
+    canvas.setAttribute("width", `${1200 * screen.width / 2000}px`);
+    canvas.setAttribute("height", `${700}px`);
+    panel.setAttribute("width" ,`${400 * screen.width / 2000}px`)
 
-    create_json_editor()
+    create_json_editor();
     // restoreBackup();
     // draw();
 
